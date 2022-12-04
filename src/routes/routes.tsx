@@ -6,12 +6,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import { Home } from '../screens/Home';
-import Payd from '../screens/Payd';
-import NearToDueDate from '../screens/NearToDueDate';
-import OverDue from '../screens/OverDue';
+import Payd from '../screens/Home/components/Payd';
+import NearToDueDate from '../screens/Home/components/NearToDueDate';
+import OverDue from '../screens/Home/components/OverDue';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WhoWeAre from '../screens/WhoWeAre';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import RegisterReminder from '../screens/RegisterReminder';
 
 import { View, Text } from 'react-native';
 
@@ -68,7 +69,7 @@ export function TabRoutes() {
       />
       <Tab.Screen
         name='Adicionar'
-        component={Home}
+        component={RegisterReminder}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (

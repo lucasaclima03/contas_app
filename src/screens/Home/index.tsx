@@ -3,59 +3,48 @@ import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
+import NearToDueDate from './components/NearToDueDate';
+import OverDue from './components/OverDue';
+import Payd from './components/Payd';
+
 
 const Tab = createMaterialTopTabNavigator();
 
 
-function FeedScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Feed!</Text>
-    </View>
-  );
-}
 
-function NotificationsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notifications!</Text>
-    </View>
-  );
-}
-
-function ProfileScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Profile!</Text>
-    </View>
-  );
-}
 
 
 export function Home() {
   return (
     <Tab.Navigator
-      initialRouteName="Feed"
+      initialRouteName="Feed"            
       screenOptions={{
-        tabBarActiveTintColor: '#e91e63',
-        tabBarLabelStyle: { fontSize: 12 },
-        tabBarStyle: { backgroundColor: 'powderblue' },
+        tabBarInactiveTintColor: '#91918e',        
+        tabBarActiveTintColor: 'white',         
+        tabBarLabelStyle: { 
+          fontSize: 12,
+          fontWeight: 'bold'
+
+        },
+        tabBarStyle: { 
+          backgroundColor: '#8B008B',
+        },        
       }}
     >
       <Tab.Screen
         name="Feed"
-        component={FeedScreen}
-        options={{ tabBarLabel: 'Home' }}
+        component={NearToDueDate}
+        options={{ tabBarLabel: 'A vencer' }}
       />
       <Tab.Screen
         name="Notifications"
-        component={NotificationsScreen}
-        options={{ tabBarLabel: 'Updates' }}
+        component={Payd}
+        options={{ tabBarLabel: 'Pagas' }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Profile' }}
+        component={OverDue}
+        options={{ tabBarLabel: 'Atrasadas' }}
       />
     </Tab.Navigator>
   );
