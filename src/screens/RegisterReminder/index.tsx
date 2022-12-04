@@ -51,8 +51,7 @@ export default function RegisterReminder() {
     const currentDate = selectedDate || date ;
     setShow(false);
     setDate(currentDate);
-  };
-  console.log('date ' + date)
+  };  
 
 //   const showMode = (currentMode) => {
 //     setShow(true)
@@ -142,7 +141,6 @@ export default function RegisterReminder() {
                 //   locale="pt-Br"
                   value={date}
                   onChange={pickDate}                  
-                  // minimumDate={new Date((Date.now()) + 86400000) }
                 />
               )}
                name='reminderDate'

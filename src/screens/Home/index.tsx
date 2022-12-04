@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useNavigation } from '@react-navigation/native';
 
 import NearToDueDate from './components/NearToDueDate';
 import OverDue from './components/OverDue';
@@ -9,9 +10,6 @@ import Payd from './components/Payd';
 
 
 const Tab = createMaterialTopTabNavigator();
-
-
-
 
 
 export function Home() {
