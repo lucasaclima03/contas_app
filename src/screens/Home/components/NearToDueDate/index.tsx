@@ -9,13 +9,19 @@ import {
   TouchableOpacity,
   Alert,
   Pressable,
+  Button,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect } from '@react-navigation/native';
 import { Q } from '@nozbe/watermelondb';
 import { database } from '../../../../database';
 
+import { useNavigation } from '@react-navigation/native';
+
+
 export default function NearToDueDate() {
+  const navigation = useNavigation()
+
   useFocusEffect(
     useCallback(() => {
       getReminders();
@@ -38,6 +44,11 @@ export default function NearToDueDate() {
         text: 'Cancelar',
       },
       {
+        text: 'Editar',
+        onPress: () => navigation.navigate('EditReminderNavigation', {reminder})
+
+      },
+      {
         text: 'Marcar como pago',
         onPress: async () => {
           await database.write(async () => {
@@ -49,7 +60,7 @@ export default function NearToDueDate() {
         },
       },
       {
-        text: 'Apagar',
+        text: 'Excluir',
         onPress: async () =>
           await database.write(async () => {
             await reminder.destroyPermanently();
@@ -61,7 +72,7 @@ export default function NearToDueDate() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='auto' />
+      <StatusBar style='auto' />      
       <View style={styles.container}>
         <FlatList
           style={styles.list}
