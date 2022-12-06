@@ -16,6 +16,8 @@ import { Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {ReminderModel} from '../../database/models/Reminder';
+import {database} from '../../database';
 import * as Notifications from 'expo-notifications';
 
 Notifications.setNotificationHandler({
@@ -81,7 +83,7 @@ export default function RegisterReminder() {
       title: '',
       description: '',
       amount: '',
-      reminderDate: '',
+      reminderDate: new Date((Date.now()) - 86400000 ),
     },
   });
 
@@ -133,6 +135,8 @@ export default function RegisterReminder() {
     setDate(currentDate);
   };
 
+  let formatedDate = ((date.getDate() )) + "/" + ((date.getMonth() + 1)) + "/" + date.getFullYear(); 
+
   //   const showMode = (currentMode) => {
   //     setShow(true)
   //     setMode(currentMode);
@@ -141,6 +145,24 @@ export default function RegisterReminder() {
   const disable = () => {
     setShow(false);
   };
+
+  async function handleReminderData(reminderData ) {    
+    reminderData.reminderDate = formatedDate
+    console.log('REMINDER DATA ' + JSON.stringify(reminderData))    
+    await database.write(async () => {
+      const response = await database
+      .get<ReminderModel>('reminder')
+      .create(data => {
+        data.title = reminderData.title;
+        data.description = reminderData.description;
+        data.amount = parseInt(reminderData.amount) ;
+        data.due_date = reminderData.reminderDate;
+        data.payd = 0
+      });
+    });    
+    Alert.alert('Lembre salvo com sucesso!')
+    reset()          
+  }
 
   return (
     <SafeAreaView>
@@ -227,11 +249,12 @@ export default function RegisterReminder() {
                 // onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                keyboardType="numeric"
               />
             )}
             name='amount'
           />
-          <Text style={styles.text}>Escolha uma data para te lembrar</Text>
+          <Text style={styles.text}>Escolha a data de vencimento</Text>
           <Button onPress={() => setShow(true)} title='Escolher data' />
           <View style={styles.datePickerArea}>
             {show && (
@@ -240,25 +263,26 @@ export default function RegisterReminder() {
                 rules={{
                   maxLength: 100,
                 }}
-                render={({ field: { onBlur, value } }) => (
+                render={({ field: { onChange, onBlur, value } }) => (
                   <DateTimePicker
                     style={styles.datePicker}
                     //   locale="pt-Br"
                     value={date}
-                    onChange={pickDate}
+                    onChange={pickDate }
+            
                   />
                 )}
                 name='reminderDate'
               />
             )}
           </View>
-          <Text> {date.toLocaleString()} </Text>
+          <Text style={styles.dueDate}>Vencimento em: {formatedDate } </Text>
 
           <TouchableOpacity
             style={styles.submitFormButton}
-            // onPress={
-            //    handleSubmit(handleReminderData)
-            // }
+            onPress={
+               handleSubmit(handleReminderData)
+            }
           >
             <Text style={styles.submitFormButtonText}> Salvar </Text>
           </TouchableOpacity>
@@ -288,6 +312,14 @@ const styles = StyleSheet.create({
   },
   datePickerArea: {
     alignItems: 'center',
+  },
+  dueDate: {
+    color: 'black',
+    marginHorizontal: '8%',
+    fontSize: 20,
+    marginTop: 15,
+    textAlign: 'center'
+
   },
   input: {
     padding: 5,

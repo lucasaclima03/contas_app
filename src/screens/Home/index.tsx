@@ -13,6 +13,11 @@ const Tab = createMaterialTopTabNavigator();
 
 
 export function Home() {
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getReminders();
+  //   }, []),
+  // );
   return (
     <Tab.Navigator
       initialRouteName="Feed"            
@@ -30,7 +35,7 @@ export function Home() {
       }}
     >
       <Tab.Screen
-        name="Feed"
+        name="NearToDueDate"
         component={NearToDueDate}
         options={{ tabBarLabel: 'A vencer' }}
       />
