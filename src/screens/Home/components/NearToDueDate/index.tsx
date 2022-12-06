@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -7,75 +7,57 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Alert,
+  Pressable,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from '@react-navigation/native';
+import { Q } from '@nozbe/watermelondb';
+import { database } from '../../../../database';
 
 export default function NearToDueDate() {
-  const data = [
-    {
-      id: 1,
-      title: 'Unimed',
-      description: 'pagar logo',
-      amount: 400,
-      color: '#FF4500',
-      members: 8,
-      image: 'https://img.icons8.com/color/70/000000/name.png',
-    },
-    {
-      id: 1,
-      title: 'Netflix',
-      description: 'pagar logo',
-      amount: 500,
-      color: '#87CEEB',
-      members: 6,
-      image: 'https://img.icons8.com/office/70/000000/home-page.png',
-    },
-    {
-      id: 2,
-      title: 'Condominio',
-      description: 'pagar logo',
-      amount: 350,
-      color: '#4682B4',
-      members: 12,
-      image: 'https://img.icons8.com/color/70/000000/two-hearts.png',
-    },
-    {
-      id: 3,
-      title: 'Amazon',
-      description: 'pagar logo',
-      amount: 600,
-      color: '#6A5ACD',
-      members: 5,
-      image: 'https://img.icons8.com/color/70/000000/family.png',
-    },
-    {
-      id: 4,
-      title: 'Cartao 2',
-      description: 'pagar logo',
-      amount: 400,
-      color: '#FF69B4',
-      members: 6,
-      image: 'https://img.icons8.com/color/70/000000/groups.png',
-    },
-    {
-      id: 5,
-      title: 'Escola das crianças',
-      description: 'pagar logo',
-      amount: 400,
-      color: '#00BFFF',
-      members: 7,
-      image: 'https://img.icons8.com/color/70/000000/classroom.png',
-    },
-    {
-      id: 6,
-      title: 'Gastos extras inesperados',
-      description: 'pagar logo',
-      amount: 400,
-      color: '#00FFFF',
-      members: 8,
-      image: 'https://img.icons8.com/dusk/70/000000/checklist.png',
-    },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      getReminders();
+    }, [])
+  );
+
+  const [savedReminders, setSavedReminders] = useState();
+
+  const getReminders = async () => {
+    const remindersCollection = database.get('reminder');
+    const response = await remindersCollection
+      .query(Q.where('payd', 0))
+      .fetch();
+    setSavedReminders(response);
+  };
+
+  async function updateReminder(reminder) {
+    Alert.alert('Atenção', 'Selecione uma das opções', [
+      {
+        text: 'Cancelar',
+      },
+      {
+        text: 'Marcar como pago',
+        onPress: async () => {
+          await database.write(async () => {
+            await reminder.update((reminder) => {
+              reminder.payd = 1;
+            });
+          });
+          getReminders();
+        },
+      },
+      {
+        text: 'Apagar',
+        onPress: async () =>
+          await database.write(async () => {
+            await reminder.destroyPermanently();
+            getReminders();
+          }),
+      },
+    ]);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,7 +66,7 @@ export default function NearToDueDate() {
         <FlatList
           style={styles.list}
           contentContainerStyle={styles.listContainer}
-          data={data}
+          data={savedReminders}
           horizontal={false}
           numColumns={2}
           //   keyExtractor={(item) => {
@@ -92,30 +74,27 @@ export default function NearToDueDate() {
           //   }}
           renderItem={({ item }) => {
             return (
-              <TouchableOpacity
-                style={styles.card}
-                // onPress={() => {
-                //   this.clickEventListener(item.view);
-                // }}
-              >
+              <View style={styles.card}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.title}>{item.title}</Text>
-                  <Image
-                    style={styles.icon}
-                    source={{
-                      uri: 'https://img.icons8.com/ios/40/000000/settings.png',
-                    }}
-                  />
+                  <Pressable onPress={() => updateReminder(item)}>
+                    <Image
+                      style={styles.icon}
+                      source={{
+                        uri: 'https://img.icons8.com/ios/40/000000/settings.png',
+                      }}
+                    />
+                  </Pressable>
                 </View>
                 {/* <Image style={styles.cardImage} source={{ uri: item.image }} /> */}
                 <Text style={styles.description}> {item.description} </Text>
                 <Text style={styles.amount}>R$ {item.amount} </Text>
-                <Text style={styles.overDue}> Vencimento em 25/05/2022</Text>
+                <Text style={styles.overDue}>Vencimento: {item.due_date} </Text>
                 <View style={styles.cardFooter}>
                   <Text style={styles.subTitle}>ICON</Text>
                   <Text style={styles.subTitle}>Marcar como pago</Text>
                 </View>
-              </TouchableOpacity>
+              </View>
             );
           }}
         />
@@ -141,13 +120,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 5,
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   container: {
     flex: 1,
     backgroundColor: 'white',
     width: '100%',
-    height: '100%',    
+    height: '100%',
   },
   cardArea: {
     width: 100,
@@ -166,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFEDF8',
     borderWidth: 1,
     borderRadius: 20,
-    elevation: 6
+    elevation: 6,
   },
   cardHeader: {
     paddingVertical: 17,
@@ -198,13 +177,13 @@ const styles = StyleSheet.create({
   description: {
     color: 'black',
     textAlign: 'center',
-    marginBottom: 8
+    marginBottom: 8,
   },
   title: {
     fontSize: 16,
     flex: 1,
     color: 'black',
-    fontWeight: 'bold',    
+    fontWeight: 'bold',
   },
   overDue: {
     textAlign: 'center',
