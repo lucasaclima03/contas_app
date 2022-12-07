@@ -89,8 +89,7 @@ export default function NearToDueDate() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style='auto' />      
-      <View style={styles.container}>
+      <StatusBar style='auto' />        
         <FlatList
           style={styles.list}
           contentContainerStyle={styles.listContainer}
@@ -125,8 +124,7 @@ export default function NearToDueDate() {
               </TouchableOpacity>
             );
           }}
-        />
-      </View>
+        />      
       {/* <Text>Proximas do vencimento</Text>
         <View style={styles.cardArea} >
             <Text>Unimed Plano</Text>
@@ -154,13 +152,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     width: '100%',
-    height: '100%',
+    height: '100%',    
   },
   cardArea: {
     width: 100,
     height: 200,
     borderWidth: 1,
-    backgroundColor: '#FFEDF8',
+    backgroundColor: '#FFEDF8',    
   },
   actionArea: {
     height: '100%',
@@ -173,7 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFEDF8',
     borderWidth: 1,
     borderRadius: 20,
-    elevation: 6,
+    elevation: 6,    
   },
   cardHeader: {
     paddingVertical: 17,
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     paddingVertical: 12.5,
-    paddingHorizontal: 16,
+    paddingHorizontal: 16,    
   },
   cardFooter: {
     flexDirection: 'row',
@@ -229,7 +227,7 @@ const styles = StyleSheet.create({
   },
   list: {
     //paddingHorizontal: 5,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff',    
   },
   listContainer: {
     alignItems: 'center',

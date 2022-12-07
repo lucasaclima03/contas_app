@@ -89,7 +89,7 @@ export function HomeNavigation({ navigation }) {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: true,
+        headerShown: true,        
       }}
     >
       <Stack.Screen
