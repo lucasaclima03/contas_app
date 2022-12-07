@@ -17,6 +17,9 @@
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleDebug"
+      },
+      "env": {
+        "EAS_BUILD_DISABLE_NPM_CACHE": "1"
       }
     },
     "production": {}

@@ -22,12 +22,11 @@ export function Home() {
     <Tab.Navigator
       initialRouteName="Feed"            
       screenOptions={{
-        tabBarInactiveTintColor: '#91918e',        
-        tabBarActiveTintColor: 'white',         
+        tabBarInactiveTintColor: '#c2c2c2',        
+        tabBarActiveTintColor: 'white',
         tabBarLabelStyle: { 
           fontSize: 12,
           fontWeight: 'bold'
-
         },
         tabBarStyle: { 
           backgroundColor: '#8B008B',

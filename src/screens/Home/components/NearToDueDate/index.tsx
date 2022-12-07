@@ -70,6 +70,23 @@ export default function NearToDueDate() {
     ]);
   }
 
+  async function removeReminder(reminder) {
+    Alert.alert('Atenção', 'Deseja realmente excluir o item?', [
+      {
+        text: 'Cancelar',
+      },      
+      {
+        text: 'Excluir',
+        onPress: async () =>
+          await database.write(async () => {
+            await reminder.destroyPermanently();
+            getReminders();
+          }),
+      },
+    ]);
+    
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='auto' />      
@@ -85,7 +102,7 @@ export default function NearToDueDate() {
           //   }}
           renderItem={({ item }) => {
             return (
-              <View style={styles.card}>
+              <TouchableOpacity style={styles.card} onLongPress={() => removeReminder(item)} onPress={() => updateReminder(item)} >
                 <View style={styles.cardHeader}>
                   <Text style={styles.title}>{item.title}</Text>
                   <Pressable onPress={() => updateReminder(item)}>
@@ -105,7 +122,7 @@ export default function NearToDueDate() {
                   <Text style={styles.subTitle}>ICON</Text>
                   <Text style={styles.subTitle}>Marcar como pago</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           }}
         />
@@ -187,8 +204,9 @@ const styles = StyleSheet.create({
   },
   description: {
     color: 'black',
-    textAlign: 'center',
+    // textAlign: 'left',
     marginBottom: 8,
+    marginLeft: 12    
   },
   title: {
     fontSize: 16,

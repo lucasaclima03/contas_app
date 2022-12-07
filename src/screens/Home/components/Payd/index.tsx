@@ -65,7 +65,7 @@ export default function Payd(){
               <View style={styles.card}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.title}>{item.title}</Text>
-                  <Pressable >
+                  <Pressable onPress={()=> updateReminder(item)} >
                     <Image
                       style={styles.icon}
                       source={{
@@ -164,8 +164,9 @@ const styles = StyleSheet.create({
     },
     description: {
       color: 'black',
-      textAlign: 'center',
+      // textAlign: 'center',
       marginBottom: 8,
+      marginLeft: 12
     },
     title: {
       fontSize: 16,
