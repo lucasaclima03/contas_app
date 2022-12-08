@@ -86,7 +86,7 @@ export default function NearToDueDate() {
   // }
 
 
-  await scheduleNextReminder(reminder.alarm_id)
+  // await scheduleNextReminder(reminder.alarm_id)
 
   // console.log('respostaaa ' + response)
 
