@@ -77,13 +77,18 @@ export default (props) => (
     screenOptions={{ headerShown: false }}
     initialRouteName='WhoWeAre'
   >
-    <Drawer.Screen name='HomeDrawer' component={StackNavigation} />
+    <Drawer.Screen name='HomeDrawer' component={StackNavigation} options={{        
+        headerTitleAlign: 'center',
+        title: 'Home'
+      }} />
     <Drawer.Screen
       name='Quem Somos'
       component={WhoWeAre}
+      
       options={{
         headerShown: true,
         headerTitleAlign: 'center',
+        title: 'Quem somos'
       }}
     />
   </Drawer.Navigator>

@@ -96,7 +96,7 @@ export function HomeNavigation({ navigation }) {
         name='HomeNavigation'
         component={Home}
         options={{
-          title: 'Tela Home',
+          title: 'Home',
           headerTitleAlign: 'center',
           headerLeft: () => (
             <View style={{ margin: 5 }}>

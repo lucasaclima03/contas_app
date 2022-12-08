@@ -19,42 +19,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { ReminderModel } from '../../database/models/Reminder';
 import { database } from '../../database';
 import * as Notifications from 'expo-notifications';
+import { Q } from '@nozbe/watermelondb';
+import { Linking } from 'react-native';
 
-import ReactNativeAN from 'react-native-alarm-notification'
 
 //const fireDate = ReactNativeAN.parseDate(new Date(Date.now())); // set the fire date for 1 second from now
 //console.log('firedate ' + fireDate)
-const fireDate = '06-12-2022 19:51:00'; // set exact date time | Format: dd-MM-yyyy HH:mm:ss
 
-
-
-async function method() {
-  //Schedule Future Alarm
-  const alarm = await ReactNativeAN.scheduleAlarm({
-    ...alarmNotifData,
-    fire_date: fireDate,
-  });
-  console.log(alarm); // { id: 1 }
-
-  //Delete Scheduled Alarm
-  ReactNativeAN.deleteAlarm(alarm.id);
-
-  //Delete Repeating Alarm
-  ReactNativeAN.deleteRepeatingAlarm(alarm.id);
-
-  //Stop Alarm
-  ReactNativeAN.stopAlarmSound();
-
-  //Send Local Notification Now
-  // ReactNativeAN.sendNotification(alarmNotifData);
-
-  //Get All Scheduled Alarms
-  const alarms = await ReactNativeAN.getScheduledAlarms();
-
-  //Clear Notification(s) From Notification Center/Tray
-  ReactNativeAN.removeFiredNotification(alarm.id);
-  ReactNativeAN.removeAllFiredNotifications();
-}
+import * as TaskManager from 'expo-task-manager';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -64,16 +36,17 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function schedulePushNotification() {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "You've got mail! 📬",
-      body: 'Here is the notification body dude',
-      data: { data: 'goes here' },
-    },
-    trigger: { seconds: 2 },
-  });
-}
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+  console.log('Received a notification in the background!');  
+});
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+
+
+
+
 
 async function registerForPushNotificationsAsync() {
   let token;
@@ -120,10 +93,11 @@ export default function RegisterReminder() {
       title: '',
       description: '',
       amount: '',
-      reminderDate: new Date(Date.now() - 86400000),
-      reminderHour: ''
+      dueDate: '',
+      reminderDate: new Date(Date.now() - 86400000),      
     },
   });
+  
 
   //   const [open, setOpen] = useState(false);
 
@@ -137,32 +111,7 @@ export default function RegisterReminder() {
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
-  const [fireReminderDate, setFireReminderDate]= useState();
-
   
-
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
 
   const [date, setDate] = useState(new Date());
   //1598051730000
@@ -194,36 +143,171 @@ export default function RegisterReminder() {
   }  
 
   let formatedDate =
-    date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+    date.getDate().toString().padStart(2,'0') + '/' + (date.getMonth() + 1).toString().padStart(2,'0') + '/' + date.getFullYear();
 
   let formatedFireDate =
   date.getDate().toString().padStart(2,'0') + '-' + (date.getMonth() + 1).toString().padStart(2,'0')  + '-' + date.getFullYear() + ' ' + date.getHours().toString().padStart(2,'0') + ':' + date.getMinutes().toString().padStart(2,'0') + ':00'  ;
+  
 
+
+  let day = date.getDate();
+  let month = (date.getMonth() + 1 );
+  let year = date.getFullYear()
+  let hours = date.getHours()
+  let minutes = date.getMinutes()
+  let seconds = date.getSeconds()
 
   // console.log('data formatada ' + formatedDate)
-  console.log('FIRE FORMATED ' + formatedFireDate)
+  
+
+  const [savedReminders, setSavedReminders] = useState();
+
+
+  async function scheduleNextReminder(){
+
+    await getScheduledReminder(25)
+
+    
+    // const currentMonth = (savedReminders[0].month + 1 )
+
+    const currentMonth = 1
+    
+    console.log('mes atual ' + currentMonth )
+    
+    let nextMonthData;
+
+    if(currentMonth > 11 ){
+      nextMonthData = 1      
+    }
+
+    console.log('ano atual ' + date.getFullYear())
+    
+    // const currentYear = date.getFullYear()
+
+    const currentYear = 2023
+
+    let nextYearData ;
+
+    if(currentYear > savedReminders[0].year) {
+      nextYearData = (savedReminders[0].year + 1)
+    }
+
+    console.log('proximo ano ' + nextYearData)
+
+    const nextMonthFireDate =  savedReminders[0].day.toString().padStart(2,'0') + '-' + (parseInt(currentMonth) > 11 ? (nextMonthData).toString().padStart(2,'0') : (currentMonth +1).toString().padStart(2,'0'))  + '-' + savedReminders[0].year + ' ' + savedReminders[0].hours.toString().padStart(2,'0') + ':' + savedReminders[0].minutes.toString().padStart(2,'0') + ':00'  ;
+
+    const nextMonthDueDate = savedReminders[0].day.toString().padStart(2,'0') + '/' + (parseInt(currentMonth) > 11 ? (nextMonthData).toString().padStart(2,'0') : (currentMonth +1).toString().padStart(2,'0'))  + '/' + savedReminders[0].year ;
+
+    const nextMonth = (currentMonth < 12 ? (currentMonth + 1) : nextMonthData )
+
+    console.log('next month fire date ' + nextMonthFireDate)
+
+    console.log('next month due date ' + nextMonthDueDate)
+
+    const alarmNotifData = {
+      title: `Lembrete ${savedReminders[0].title} `,
+      message: savedReminders[0].description,
+      channel: 'my_channel_id',
+      small_icon: 'ic_launcher',
+      loop_sound: false,
+      has_button: true,      
+      auto_cancel: true,
+      fire_date: nextMonthFireDate,
+      schedule_type: 'repeat',
+    };
+
+    
+
+    console.log('proximo mes ' + JSON.stringify(alarmNotifData ))
+    // const alarm = await ReactNativeAN.scheduleAlarm(alarmNotifData) 
+
+    await database.write(async () => {
+      const response = await database
+        .get<ReminderModel>('reminder')
+        .create((data) => {
+          data.title = savedReminders[0].title;
+          data.description = savedReminders[0].description;
+          data.amount = savedReminders[0].amount;
+          data.due_date = savedReminders[0].dueDate;
+          data.reminder_date = formatedFireDate;
+          data.payd = 0;
+          data.alarm_id = alarm.id;
+          data.previous_id = savedReminders[0].alarm_id;
+          data.day = savedReminders[0].day;
+          data.month = nextMonth;
+          data.hours = savedReminders[0].hours;
+          data.minutes = savedReminders[0].minutes;
+          data.payment_proof = savedReminders[0].payment_proof;
+          data.username = savedReminders[0].username;
+          data.email = savedReminders[0].email;
+
+        });
+    });
+
+  }
+
+  // const trigger = new Date()
+  //   trigger.setHours(11)
+  //   trigger.setMinutes(30);
+  //   trigger.setSeconds(0);
+  //   console.log('trigger ' + trigger)
+
+  async function getScheduledNotifications (){
+    const response = await Notifications.getAllScheduledNotificationsAsync()
+    console.log('reponse ' + response)
+  }
+
+  async function schedulePushNotification() {
+
+    const trigger = date
+    trigger.setHours(hours)
+    trigger.setMinutes(minutes);    
+    trigger.setSeconds(0);
+    console.log('trigger ' + trigger)
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "You've got mail! 📬",
+        body: 'Here is the notification body dude',
+        data: { data: 'goes here' },
+      },
+      // trigger: { seconds: 2 },
+      trigger
+    });
+  }
 
   
 
   async function handleReminderData(reminderData) {
-    reminderData.reminderDate = formatedDate;
+    reminderData.dueDate = formatedDate;
     // console.log('REMINDER DATA ' + JSON.stringify(reminderData));    
 
-    const alarmNotifData = {
-      title: 'Lembrete de conta',
-      message: reminderData.title ,
-      channel: 'my_channel_id',
-      small_icon: 'ic_launcher',
-      loop_sound: false,
-      has_button: true,  
-      data: { vencimento: 'pagar hoje!' },
-      auto_cancel: true
-    };
+    // const alarmNotifData = {
+    //   title: 'Lembrete de conta',
+    //   message: reminderData.title ,
+    //   channel: 'my_channel_id',
+    //   small_icon: 'ic_launcher',
+    //   loop_sound: false,
+    //   has_button: true,  
+    //   data: { vencimento: 'pagar hoje!' },
+    //   auto_cancel: true,
+    //   fire_date: formatedFireDate,
+    //   schedule_type: 'once'
+    // };
 
-    await ReactNativeAN.scheduleAlarm({
-      ...alarmNotifData,
-      fire_date: formatedFireDate,
-      }) 
+    const trigger = date
+    trigger.setHours(hours)
+    trigger.setMinutes(minutes);    
+    trigger.setSeconds(0);
+    console.log('trigger ' + trigger)
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: reminderData.title ,
+        body: reminderData.description,
+        data: { data: 'goes here' },
+      },
+      // trigger: { seconds: 2 },
+      trigger
+    });    
 
     await database.write(async () => {
       const response = await database
@@ -232,13 +316,70 @@ export default function RegisterReminder() {
           data.title = reminderData.title;
           data.description = reminderData.description;
           data.amount = parseInt(reminderData.amount);
-          data.due_date = reminderData.reminderDate;
+          data.due_date = reminderData.dueDate;
+          data.reminder_date = formatedFireDate;
           data.payd = 0;
+          // data.alarm_id = alarm.id;
+          data.day = day;
+          data.month = month;
+          data.year = year;
+          data.hours = hours;
+          data.minutes = minutes;
         });
     });
     Alert.alert('Lembre salvo com sucesso!');
     reset();
   }  
+
+  async function returnAllScheduledReminders(){
+    // const response = await ReactNativeAN.getScheduledAlarms()
+    console.log('ALARMES ' + JSON.stringify(response))
+    return response
+  }
+
+  async function getScheduledReminder(id) {
+    //const response = await ReactNativeAN.getScheduledAlarms()
+    
+      const remindersCollection = database.get('reminder');
+      const response = await remindersCollection
+        .query(Q.where('alarm_id', parseInt(id)))
+        .fetch();
+        var seen = [];
+      console.log('unico ' + JSON.stringify(response, function(key, val) {
+        if (val != null && typeof val == "object") {
+             if (seen.indexOf(val) >= 0) {
+                 return;
+             }
+             seen.push(val);
+         }
+         return val;
+     } ))   
+    setSavedReminders(response)
+  }
+
+  
+
+  const returnReminders = async () => {
+    const remindersCollection = database.get('reminder');
+    const response = await remindersCollection
+      .query(Q.where('payd', 0))
+      .fetch();
+      var seen = [];
+    console.log('banco de dados ' + JSON.stringify(response, function(key, val) {
+      if (val != null && typeof val == "object") {
+           if (seen.indexOf(val) >= 0) {
+               return;
+           }
+           seen.push(val);
+       }
+       return val;
+   } ))
+    setSavedReminders(response);
+  };
+
+  
+
+  
 
   
 
@@ -314,9 +455,20 @@ export default function RegisterReminder() {
             )}
             name='amount'
           />
-          <Text style={styles.text}>Escolha a data de vencimento</Text>
-          <Button onPress={() => showMode('date')} title='Escolher data' />
-          <Button onPress={() => showMode('time')} title='Escolher hora' />
+          <Text style={styles.text}>Escolha a data/hora de lembrete/vencimento</Text>
+          <TouchableOpacity
+            style={styles.submitFormButton}
+            onPress={() => showMode('date')}
+          >
+            <Text style={styles.submitFormButtonText}> Escolher data </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.submitFormButton}
+            onPress={() => showMode('time')}
+          >
+            <Text style={styles.submitFormButtonText}> Escolher hora </Text>
+          </TouchableOpacity>
+          
           <View style={styles.datePickerArea}>
             {show && (
               <Controller
@@ -334,39 +486,20 @@ export default function RegisterReminder() {
                     display={display}
                   />
                 )}
-                name='reminderDate'
+                name='dueDate'
               />
-            )}
-            {/* {show && (
-              <Controller
-                control={control}
-                rules={{
-                  maxLength: 100,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <DateTimePicker
-                    style={styles.datePicker}
-                    //   locale="pt-Br"
-                    value={date}
-                    onChange={() => showMode('time') }
-                    mode={mode}
-                  />
-                )}
-                name='reminderHour'
-              />
-            )} */}
+            )}            
           </View>
-          <Text style={styles.dueDate}>Vencimento em: {formatedDate} </Text>
-          <Text style={styles.dueDate}>Alarme: {formatedFireDate} </Text>
+          {/* <Text style={styles.dueDate}>Vencimento em: {formatedDate} </Text> */}
+          
+          <Text style={styles.dueDate}>Lembrete em: {formatedFireDate} </Text>
 
           <TouchableOpacity
             style={styles.submitFormButton}
             onPress={handleSubmit(handleReminderData)}
           >
             <Text style={styles.submitFormButtonText}> Salvar </Text>
-          </TouchableOpacity>
-          <Button title='ver alarmes' onPress={ async () => console.log(await ReactNativeAN.getScheduledAlarms())   } 
-          />
+          </TouchableOpacity>          
         </View>
       </ScrollView>
     </SafeAreaView>

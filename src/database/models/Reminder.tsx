@@ -20,14 +20,37 @@ export class ReminderModel extends Model {
     amount: number
 
     @field('reminder_date')
-    reminder_date: Date
+    reminder_date: string
 
     @field('due_date')
-    due_date: Date
+    due_date: string
 
     @field('payment_proof')
     payment_proof: string 
 
     @field('payd')
     payd: number
+
+    @field('alarm_id')
+    alarm_id: number
+
+    @field('day')
+    day: number
+
+    @field('month')
+    month: number
+
+    @field('year')
+    year: number
+
+    @field('hours')
+    hours: number
+
+    @field('minutes')
+    minutes: number
+
+    @field('previous_id')
+    previous_id: number
+
+
 }

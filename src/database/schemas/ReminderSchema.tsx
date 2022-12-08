@@ -48,6 +48,41 @@ export const reminderSchema = tableSchema({
             type: 'number',
             isOptional: true
         },
+        {
+            name: 'alarm_id',
+            type: 'number',
+            isOptional: true
+        },
+        {
+            name: 'day',
+            type: 'number',
+            isOptional: true
+        },
+        {
+            name: 'month',
+            type: 'number',
+            isOptional: true
+        },
+        {
+            name: 'year',
+            type: 'number',
+            isOptional: true
+        },
+        {
+            name: 'hours',
+            type: 'number',
+            isOptional: true
+        },
+        {
+            name: 'minutes',
+            type: 'number',
+            isOptional: true
+        },
+        {
+            name: 'previous_id',
+            type: 'number',
+            isOptional: true
+        },
         
     ]
 
