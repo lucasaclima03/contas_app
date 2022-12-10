@@ -31,55 +31,26 @@ import * as TaskManager from 'expo-task-manager';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
 
-const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
-  console.log('Received a notification in the background!');  
-});
+// async function schedulePushNotification() {
+//   await Notifications.scheduleNotificationAsync({
+//     content: {
+//       title: "You've got mail! 📬",
+//       body: 'Here is the notification body',
+//       data: { data: 'goes here' },
+//     },
+//     trigger: { seconds: 2 },
+//   });
+// }
 
-Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 
 
-
-
-async function registerForPushNotificationsAsync() {
-  let token;
-
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert('Must use physical device for Push Notifications');
-  }
-
-  return token;
-}
 
 export default function RegisterReminder() {
   const {
@@ -254,25 +225,44 @@ export default function RegisterReminder() {
 
   async function getScheduledNotifications (){
     const response = await Notifications.getAllScheduledNotificationsAsync()
-    console.log('reponse ' + response)
+    console.log('reponse ' + JSON.stringify(response))
   }
 
   async function schedulePushNotification() {
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+    
+    const daysToSeconds = (days) => { return days * 24 * 60 * 60; }
+
+    console.log('days to seconds ' + new Date(daysToSeconds(31)) )
 
     const trigger = date
     trigger.setHours(hours)
     trigger.setMinutes(minutes);    
     trigger.setSeconds(0);
     console.log('trigger ' + trigger)
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "You've got mail! 📬",
-        body: 'Here is the notification body dude',
-        data: { data: 'goes here' },
-      },
-      // trigger: { seconds: 2 },
-      trigger
-    });
+    // await Notifications.scheduleNotificationAsync({
+    //   content: {
+    //     title: "Novo teste",
+    //     body: 'Teste novo',
+    //     data: { data: 'goes here' },
+    //   },
+    //   // trigger: { seconds: 2 },
+    //   trigger: {
+    //     channelId: 'default',
+    //     date: date,
+    //     repeats: true
+    //   }
+    // });
+
+    // console.log('date ' + date)
   }
 
   
@@ -298,7 +288,7 @@ export default function RegisterReminder() {
     trigger.setHours(hours)
     trigger.setMinutes(minutes);    
     trigger.setSeconds(0);
-    console.log('trigger ' + trigger)
+    console.log('trigger ' + trigger)    
     await Notifications.scheduleNotificationAsync({
       content: {
         title: reminderData.title ,
@@ -306,7 +296,10 @@ export default function RegisterReminder() {
         data: { data: 'goes here' },
       },
       // trigger: { seconds: 2 },
-      trigger
+      trigger: trigger
+        
+        ,
+      
     });    
 
     await database.write(async () => {
@@ -499,7 +492,9 @@ export default function RegisterReminder() {
             onPress={handleSubmit(handleReminderData)}
           >
             <Text style={styles.submitFormButtonText}> Salvar </Text>
-          </TouchableOpacity>          
+          </TouchableOpacity>      
+          <Button title='Agendar notif' onPress={ () => schedulePushNotification() }  />     
+          <Button title='ver notif agendadas' onPress={ async() => await getScheduledNotifications() }  />     
         </View>
       </ScrollView>
     </SafeAreaView>
