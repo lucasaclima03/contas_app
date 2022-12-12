@@ -31,8 +31,8 @@ export class ReminderModel extends Model {
     @field('payd')
     payd: number
 
-    @field('alarm_id')
-    alarm_id: number
+    @field('event_id')
+    event_id: number
 
     @field('day')
     day: number
