@@ -21,8 +21,8 @@ import { useNavigation } from '@react-navigation/native';
 import { ReminderModel } from '../../../../database/models/Reminder';
 import * as Calendar from 'expo-calendar'
 
-export default function NearToDueDate() {
-  const navigation = useNavigation()
+export default function NearToDueDate() {  
+  const navigation = useNavigation()  
 
   useFocusEffect(
     useCallback(() => {
@@ -98,122 +98,6 @@ export default function NearToDueDate() {
   }
   
   
-  
-  async function scheduleNextReminder(id){
-
-    console.log('IDE ' + id.id)
-    const reminderId = parseInt(id.id)
-
-    console.log('number ' + reminderId)
-    
-    const response = await getScheduledReminder(reminderId)
-    console.log('RESPONSE ' + response[0].month )
-
-    
-    const currentMonth = (response[0].month )
-
-    //const currentMonth = 1
-    
-    console.log('mes atual ' + currentMonth )
-    
-    let nextMonthData;
-
-    if(currentMonth > 11 ){
-      nextMonthData = 1      
-    }    
-    
-    const currentYear = date.getFullYear()
-
-    // const currentYear = 2023
-
-    let nextYearData ;
-
-    if(currentYear > response[0].year) {
-      nextYearData = (response[0].year + 1)
-    }
-    if(currentYear > 11) {
-      nextYearData = (response[0].year + 1)
-    }
-
-    console.log('dia ' + response[0].day)
-
-    const nextMonthFireDate =  response[0].day.toString().padStart(2,'0') + '-' + (parseInt(currentMonth) > 11 ? (nextMonthData).toString().padStart(2,'0') : (currentMonth +1).toString().padStart(2,'0'))  + '-' + ((currentYear > 11 ) ? (nextYearData).toString() : response[0].year  ) + ' ' + response[0].hours.toString().padStart(2,'0') + ':' + response[0].minutes.toString().padStart(2,'0') + ':00'  ;
-
-    const nextMonthDueDate = response[0].day.toString().padStart(2,'0') + '/' + (parseInt(currentMonth) > 11 ? (nextMonthData).toString().padStart(2,'0') : (currentMonth +1).toString().padStart(2,'0'))  + '/' + response[0].year ;
-
-    const nextMonth = (currentMonth < 12 ? (currentMonth + 1) : nextMonthData )
-
-    console.log('next month fire date ' + nextMonthFireDate)
-
-    console.log('next month due date ' + nextMonthDueDate)
-
-    const alarmNotifData = {
-      title: `Lembrete ${response[0].title} `,
-      message: response[0].description,
-      channel: 'my_channel_id',
-      small_icon: 'ic_launcher',
-      loop_sound: false,
-      has_button: true,      
-      auto_cancel: true,
-      fire_date: nextMonthFireDate,
-      schedule_type: 'once',
-    };
-
-    
-
-    console.log('proximo mes ' + JSON.stringify(alarmNotifData ))
-    // const alarm = await ReactNativeAN.scheduleAlarm(alarmNotifData) 
-
-    await database.write(async () => {
-      const response = await database
-        .get<ReminderModel>('reminder')
-        .create((data) => {
-          data.title = response[0].title;
-          data.description = response[0].description;
-          data.amount = response[0].amount;
-          data.due_date = nextMonthDueDate;
-          data.reminder_date = nextMonthFireDate;
-          data.payd = 0;
-          data.alarm_id = alarm.id;
-          data.previous_id = response[0].alarm_id;
-          data.day = response[0].day;
-          data.month = nextMonth;
-          data.hours = response[0].hours;
-          data.minutes = response[0].minutes;
-          data.payment_proof = response[0].payment_proof;
-          data.username = response[0].username;
-          data.email = response[0].email;
-
-        });
-    });
-
-  }
-
-  async function getScheduledReminder(id) {
-
-    console.log('ID DO SCHEDULE ' + id)
-    //const response = await ReactNativeAN.getScheduledAlarms()
-    
-      const remindersCollection = database.get('reminder');
-      const response = await remindersCollection
-        .query(Q.where('alarm_id', parseInt(id)))
-        .fetch();
-        setSavedReminders(response)        
-        var seen = [];
-      console.log('unico ' + JSON.stringify(response[0], function(key, val) {
-        if (val != null && typeof val == "object") {
-             if (seen.indexOf(val) >= 0) {
-                 return;
-             }
-             seen.push(val);
-         }
-         return val;
-     } ))   
-
-     return response;
-  }
-
-
   const getReminders = async () => {
     const remindersCollection = database.get('reminder');
     const response = await remindersCollection

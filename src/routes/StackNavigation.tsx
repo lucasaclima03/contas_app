@@ -44,7 +44,7 @@ export function HomeNavigationTabs() {
     >
       <Tab.Screen
         name='HomeTab'
-        component={HomeNavigation}
+        component={HomeNavigation}        
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
@@ -69,14 +69,14 @@ export function HomeNavigationTabs() {
         }}
       />
       <Tab.Screen
-        name='PaydTab'
-        component={PaydNavigation}
+        name='WhoWeAreTab'
+        component={WhoWeAreNavigation}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <>
-              <MaterialIcons name='favorite' color={color} size={size} />
-              <Text style={{ color: 'black' }}>Contas pagas</Text>
+              <MaterialIcons name='lightbulb-outline' color={color} size={size} />
+              <Text style={{ color: 'black' }}>Quem somos</Text>
             </>
           ),
         }}
@@ -166,6 +166,29 @@ export function PaydNavigation({ navigation }) {
       }}
     >
       <Stack.Screen name='PaydNavigation' component={Payd} />
+    </Stack.Navigator>
+  );
+}
+
+export function WhoWeAreNavigation({ navigation }) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        title: 'Quem somos',
+        headerTitleAlign: 'center',
+        headerLeft: () => (
+          <View style={{ margin: 5 }}>
+            <MaterialIcons
+              name='menu'
+              size={25}
+              onPress={() => navigation.openDrawer()}
+            />
+          </View>
+        ),
+      }}
+    >
+      <Stack.Screen name='WhoWeAreNavigation' component={WhoWeAre} />
     </Stack.Navigator>
   );
 }
