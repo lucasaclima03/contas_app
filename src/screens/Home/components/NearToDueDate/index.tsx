@@ -19,7 +19,7 @@ import { database } from '../../../../database';
 import { useNavigation } from '@react-navigation/native';
 
 import { ReminderModel } from '../../../../database/models/Reminder';
-
+import * as Calendar from 'expo-calendar'
 
 export default function NearToDueDate() {
   const navigation = useNavigation()
@@ -34,17 +34,21 @@ export default function NearToDueDate() {
   const [date, setDate] = useState(new Date());
 
   async function removeReminder(reminder) {
+    const eventId = reminder.event_id.toString()
+
     Alert.alert('Atenção', 'Deseja realmente excluir o item?', [
       {
         text: 'Cancelar',
       },      
       {
         text: 'Excluir',
-        onPress: async () =>
+        onPress: async () => {
           await database.write(async () => {
             await reminder.destroyPermanently();
             getReminders();
-          }),
+          })
+          await Calendar.deleteEventAsync(eventId);
+        }
       },
     ]);    
     

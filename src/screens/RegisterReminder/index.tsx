@@ -94,6 +94,8 @@ export default function RegisterReminder() {
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
+  date.setHours(9)
+  date.setMinutes(0)
   let hours = date.getHours();
   let minutes = date.getMinutes();
 
@@ -132,6 +134,7 @@ export default function RegisterReminder() {
         ],
         isVisible: true,
         isPrimary: false,
+        isSynced: true
       });
     }
 
@@ -243,8 +246,8 @@ export default function RegisterReminder() {
             )}
             name='amount'
           />
-          <Text style={styles.text}>
-            Escolha a data/hora de lembrete/vencimento
+          <Text style={styles.dueDateText}>
+            Escolha a data de vencimento
           </Text>
           <TouchableOpacity
             style={styles.submitFormButton}
@@ -252,12 +255,7 @@ export default function RegisterReminder() {
           >
             <Text style={styles.submitFormButtonText}> Escolher data </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.submitFormButton}
-            onPress={() => showMode('time')}
-          >
-            <Text style={styles.submitFormButtonText}> Escolher hora </Text>
-          </TouchableOpacity>
+          
 
           <View style={styles.datePickerArea}>
             {show && (
@@ -279,10 +277,9 @@ export default function RegisterReminder() {
                 name='dueDate'
               />
             )}
-          </View>
-          {/* <Text style={styles.dueDate}>Vencimento em: {formatedDate} </Text> */}
-
-          <Text style={styles.dueDate}>Lembrete em: {formatedFireDate} </Text>
+          </View>         
+          
+          <Text style={styles.dueDate}>Vencimento em: {`${day}/${month}`} </Text>          
 
           <TouchableOpacity
             style={styles.submitFormButton}
@@ -290,6 +287,7 @@ export default function RegisterReminder() {
           >
             <Text style={styles.submitFormButtonText}> Salvar </Text>
           </TouchableOpacity>
+          
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -323,6 +321,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 15,
     textAlign: 'center',
+  },
+  dueDateText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    alignContent: 'flex-start',    
+    marginTop: 10,
+    color: 'black',
+    textAlign: 'center'
   },
   input: {
     padding: 5,
