@@ -20,13 +20,13 @@ const Tab = createBottomTabNavigator();
 
 export default (props) => (
   <Stack.Navigator
-    initialRouteName='Login'
+    // initialRouteName='Login'
     screenOptions={{
       headerShown: false,
     }}
   >
-    <Stack.Screen name='Login' component={Login} />
     <Stack.Screen name='Home' component={HomeNavigationTabs} />
+    <Stack.Screen name='Login' component={Login} />
   </Stack.Navigator>
 );
 

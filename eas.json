@@ -19,7 +19,9 @@
         "gradleCommand": ":app:assembleDebug"
       }      
     },
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
   },
   "submit": {
     "production": {}

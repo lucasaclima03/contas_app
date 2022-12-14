@@ -9,7 +9,8 @@ import StackNavigation, {
 import { WhoWeAre } from '../screens';
 import { Home } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialIcons } from '@expo/vector-icons';
+// import { MaterialIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Text, View } from 'react-native';
 import { RegisterReminder } from '../screens';
 
@@ -36,7 +37,7 @@ function DrawerNavigationTabs() {
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
             <>
-              <MaterialIcons name='home' color={color} size={26} />
+              <Icon name='home' color={color} size={26} />
               <Text style={{ color: 'black' }}>Home</Text>
             </>
           ),
@@ -49,7 +50,7 @@ function DrawerNavigationTabs() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <>
-              <MaterialIcons name='add-box' color={color} size={26} />
+              <Icon name='add-box' color={color} size={26} />
               <Text style={{ color: 'black' }}>Adicionar Lembrete</Text>
             </>
           ),
@@ -62,7 +63,7 @@ function DrawerNavigationTabs() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <>
-              <MaterialIcons name='favorite' color={color} size={size} />
+              <Icon name='favorite' color={color} size={size} />
               <Text style={{ color: 'black' }}>Contas pagas</Text>
             </>
           ),
@@ -75,7 +76,7 @@ function DrawerNavigationTabs() {
 export default (props) => (
   <Drawer.Navigator
     screenOptions={{ headerShown: false }}
-    initialRouteName='WhoWeAre'
+    // initialRouteName='WhoWeAre'
   >
     <Drawer.Screen name='HomeDrawer' component={StackNavigation} options={{        
         headerTitleAlign: 'center',

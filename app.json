@@ -2,7 +2,8 @@
   "expo": {
     "name": "contas_app",
     "slug": "contas_app",
-    "version": "1.0.0",    
+    "version": "1.1.0",
+    "versionCode": "1.1.0",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -23,6 +24,9 @@
       "eas": {
         "projectId": "57309685-72c6-4c9e-acf3-75572f601db6"
       }
+    },
+    "android": {
+      "versionCode": 3
     }
   }
 }

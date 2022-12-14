@@ -59,7 +59,7 @@ export function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <Tab.Navigator
-        initialRouteName='Feed'
+        // initialRouteName='Feed'
         screenOptions={{
           tabBarIndicatorStyle: {
             backgroundColor: 'white',
