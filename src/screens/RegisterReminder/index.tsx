@@ -25,6 +25,16 @@ import { Q } from '@nozbe/watermelondb';
 import * as Calendar from 'expo-calendar';
 
 export default function RegisterReminder() {
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);        
+      }
+    })();
+  }, []);
+
   const {
     control,
     handleSubmit,
