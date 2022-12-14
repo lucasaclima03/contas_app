@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Q } from '@nozbe/watermelondb';
 import { useFocusEffect } from '@react-navigation/native';
 import { database } from '../../../../database';
+import { useNavigation } from '@react-navigation/native';
 
 export default function OverDue() {
   useFocusEffect(
@@ -20,6 +21,8 @@ export default function OverDue() {
       getOverDueBills();
     }, [])
   );
+
+  const navigation = useNavigation()
 
   const [date, setDate] = useState(new Date());
 
@@ -42,6 +45,11 @@ export default function OverDue() {
         text: 'Cancelar',
       },
       {
+        text: 'Editar',
+        onPress: () => navigation.navigate('EditReminderNavigation', {reminder})
+
+      },
+      {
         text: 'Marcar como pago',
         onPress: async () => {
           await database.write(async () => {
@@ -50,6 +58,7 @@ export default function OverDue() {
             });
           });
           getOverDueBills();
+          navigation.navigate('Payd')
         },
       },
       {

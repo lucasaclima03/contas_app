@@ -8,8 +8,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  Pressable,
-  Button,
+  Pressable,  
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect } from '@react-navigation/native';
@@ -23,15 +22,15 @@ import * as Calendar from 'expo-calendar'
 
 export default function NearToDueDate() {  
   const navigation = useNavigation()  
-
+  
   useFocusEffect(
     useCallback(() => {
       getReminders();
     }, [])
-  );
-
+    );   
+  
   const [savedReminders, setSavedReminders] = useState();
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date());  
 
   async function removeReminder(reminder) {
     const eventId = reminder.event_id.toString()
@@ -47,54 +46,10 @@ export default function NearToDueDate() {
             await reminder.destroyPermanently();
             getReminders();
           })
-          await Calendar.deleteEventAsync(eventId);
+          await Calendar.deleteEventAsync(eventId);          
         }
       },
     ]);    
-    
-
-    
-
-  //   let formatedDate =
-  //   date.getDate().toString().padStart(2,'0') + '/' + (date.getMonth() + 1).toString().padStart(2,'0') + '/' + date.getFullYear();
-
-  // let formatedFireDate =
-  // date.getDate().toString().padStart(2,'0') + '-' + (date.getMonth() + 1).toString().padStart(2,'0')  + '-' + date.getFullYear() + ' ' + date.getHours().toString().padStart(2,'0') + ':' + date.getMinutes().toString().padStart(2,'0') + ':00'  ;
-  //   var seen = [];
-  //   console.log('REMINDER DATA ' + JSON.stringify(reminder, function(key, val) {
-  //     if (val != null && typeof val == "object") {
-  //          if (seen.indexOf(val) >= 0) {
-  //              return;
-  //          }
-  //          seen.push(val);
-  //      }
-  //      return val;
-  //  }))   
-  //  console.log( 'formated date ' + formatedDate)
-
-   
-  // //  const hoje = date.getDate()
-  //  const hoje = 1
-  //  const lembrete = reminder.day
-   
-  //  console.log('hoje ' + hoje
-  //  )
-  //  console.log('reminder day ' + lembrete)
-
-  //  const resultado = lembrete - hoje
-
-  //  console.log('resultado ' + resultado)
-   
-  // if(resultado === 2 ) {
-
-  // }
-
-
-  // await scheduleNextReminder(reminder.alarm_id)
-
-  // console.log('respostaaa ' + response)
-
-    
   }
   
   
@@ -125,6 +80,7 @@ export default function NearToDueDate() {
             });
           });
           getReminders();
+          navigation.navigate('Payd')
         },
       },
       {
@@ -146,16 +102,13 @@ export default function NearToDueDate() {
       <StatusBar style='auto' />        
       {/* <Button title='agendados' onPress={ async() => console.log(await ReactNativeAN.getScheduledAlarms()) } /> */}
       {/* <Button title='apagar' onPress={ () => console.log( ReactNativeAN.deleteAlarm(59)) } /> */}
-      
+      <View style={styles.container}>
         <FlatList
           style={styles.list}
           contentContainerStyle={styles.listContainer}
           data={savedReminders}
           horizontal={false}
           numColumns={2}
-          //   keyExtractor={(item) => {
-          //     return item.id;
-          //   }}
           renderItem={({ item }) => {
             return (
               <TouchableOpacity style={styles.card} onLongPress={() => removeReminder(item)} onPress={() => updateReminder(item)} >
@@ -181,7 +134,8 @@ export default function NearToDueDate() {
               </TouchableOpacity>
             );
           }}
-        />      
+        />   
+      </View>   
       {/* <Text>Proximas do vencimento</Text>
         <View style={styles.cardArea} >
             <Text>Unimed Plano</Text>

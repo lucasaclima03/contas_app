@@ -59,7 +59,7 @@ export function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <Tab.Navigator
-        // initialRouteName='Feed'
+        initialRouteName='Payd'
         screenOptions={{
           tabBarIndicatorStyle: {
             backgroundColor: 'white',
@@ -81,19 +81,31 @@ export function Home() {
             elevation: 15,
           },
         }}
+        screenListeners={{
+          focus: () => {
+            getReminders();
+            getPaydBills();
+            getOverDueBills();
+          }
+          
+        }}
+        
       >
         <Tab.Screen
-          name='NearToDueDate'
-          component={NearToDueDate}
-          options={{ tabBarLabel: `A vencer (${savedReminders?.length})` }}
-        />
-        <Tab.Screen
-          name='Notifications'
+          name='Payd'
           component={Payd}
           options={{ tabBarLabel: `Pagas (${paydBills?.length})` }}
         />
+
         <Tab.Screen
-          name='Profile'
+          name='NearToDueDate'
+          component={NearToDueDate}          
+          options={{ tabBarLabel: `A vencer (${savedReminders?.length})`  }}
+          
+        />
+        
+        <Tab.Screen
+          name='OverDue'
           component={OverDue}
           options={{ tabBarLabel: `Atrasadas (${overDueBills?.length})` }}
         />
